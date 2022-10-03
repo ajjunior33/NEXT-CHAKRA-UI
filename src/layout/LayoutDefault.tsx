@@ -28,6 +28,9 @@ import {
   FiMenu,
   FiBell,
   FiChevronDown,
+  FiPackage,
+  FiUser,
+  FiUsers
 } from 'react-icons/fi';
 import { IconType } from 'react-icons';
 import { ReactText } from 'react';
@@ -36,9 +39,12 @@ import { useRouter } from 'next/router';
 interface LinkItemProps {
   name: string;
   icon: IconType;
+  href: string;
 }
 const LinkItems: Array<LinkItemProps> = [
-  { name: 'Página Inicial', icon: FiHome },
+  { name: 'Página Inicial', icon: FiHome, href: '/admin/dashboard' },
+  { name: 'Boletos', icon: FiPackage, href: '/admin/invoices' },
+  { name: 'Clientes', icon: FiUsers, href: '/admin/customer' }
 ];
 
 export default function LayoutDefault({
@@ -67,7 +73,11 @@ export default function LayoutDefault({
       </Drawer>
       {/* mobilenav */}
       <MobileNav onOpen={onOpen} />
-      <Box ml={{ base: 0, md: 60 }} p="4" h={"100vh "} bg={"white"}>
+      <Box
+        ml={{ base: 0, md: 60 }} p="4"
+        minHeight={"100vh"}
+        bg={"white"}
+      >
         {children}
       </Box>
       <Box ml={{ base: 0, md: 60 }} p="4" bg={"white"} display={"flex"} alignItems="center" justifyContent={"space-between"}>
@@ -87,6 +97,10 @@ interface SidebarProps extends BoxProps {
 }
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+  const router = useRouter()
+  const handleHref = (link: string) => {
+    router.push(link)
+  }
   return (
     <Box
       transition="3s ease"
@@ -105,7 +119,14 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
       {LinkItems.map((link) => (
-        <NavItem key={link.name} icon={link.icon}>
+        <NavItem
+          key={link.name}
+          icon={link.icon}
+          my={3}
+          bg={router.pathname === link.href ? "blue.400" : ""}
+          color={router.pathname === link.href ? "white" : "black"}
+          onClick={() => handleHref(link.href)}
+        >
           {link.name}
         </NavItem>
       ))}
@@ -118,6 +139,7 @@ interface NavItemProps extends FlexProps {
   children: ReactText;
 }
 const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
+  const router = useRouter();
   return (
     <Link href="#" style={{ textDecoration: 'none' }} _focus={{ boxShadow: 'none' }}>
       <Flex
